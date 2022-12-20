@@ -1,0 +1,28 @@
+{
+  "name": "drongo",
+  "version": "1.0.0",
+  "description": "基于Webgpu的Pbr实现",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "vite": "^4.0.0"
+  },
+  "dependencies": {
+    "@webgpu/types": "^0.1.23"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GregGJ/Drongo.git"
+  },
+  "author": "GregGJ",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GregGJ/Drongo/issues"
+  },
+  "homepage": "https://github.com/GregGJ/Drongo#readme"
+}
