@@ -44,25 +44,8 @@ export default class MathUtils {
     static isPowerOf2(v: number): boolean {
         return (v & (v - 1)) === 0;
     }
-    
-    /**
-     * 通过v1构造一个局部坐标系
-     * @param v1   必须是归一化后的向量
-     * @param v2 
-     * @param v3 
-     */
-    static coordinateSystem(v1: Vector3, v2: Vector3, v3: Vector3): void {
-        if (Math.abs(v1.x) > Math.abs(v1.y)) {
-            v2.x = -v1.z;
-            v2.y = 0;
-            v2.z = v1.z;
-            v2.scale(1 / Math.sqrt(v1.x * v1.x + v1.z * v1.z));
-        } else {
-            v2.x = 0;
-            v2.y = v1.z;
-            v2.z = -v1.y;
-            v2.scale(1 / Math.sqrt(v1.y * v1.y + v1.z * v1.z));
-        }
-        Vector3.cross(v1, v2, v3);
+
+    static lerp(min: number, max: number, t: number = 0): number {
+        return (1 - t) * min + t * max;
     }
 }

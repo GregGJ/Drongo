@@ -4,17 +4,18 @@ import MathUtils from "../../utils/MathUtils";
 
 export class Vector3 {
 
-    static tmp_Vec3_0: Vector3 = new Vector3();
-    static tmp_Vec3_1: Vector3 = new Vector3();
-    static tmp_Vec3_2: Vector3 = new Vector3();
+    static tmp0: Vector3 = new Vector3();
+    static tmp1: Vector3 = new Vector3();
+    static tmp2: Vector3 = new Vector3();
 
-    private __elements: Float32Array | Float64Array | Array<number>;
+    x: number = 0;
+    y: number = 0;
+    z: number = 0;
 
     constructor(x?: number, y?: number, z?: number) {
-        this.__elements = new MathUtils.ArrayType(3);
-        this.__elements[0] = (x === undefined || x === null || isNaN(x)) ? 0 : x;
-        this.__elements[1] = (y === undefined || y === null || isNaN(y)) ? 0 : y;
-        this.__elements[2] = (z === undefined || z === null || isNaN(z)) ? 0 : z;
+        this.x = (x === undefined || x === null || isNaN(x)) ? 0 : x;
+        this.y = (y === undefined || y === null || isNaN(y)) ? 0 : y;
+        this.z = (z === undefined || z === null || isNaN(z)) ? 0 : z;
     }
 
     /**
@@ -33,42 +34,6 @@ export class Vector3 {
         }
     }
 
-    /**X分量 */
-    get x(): number {
-        return this.__elements[0];
-    }
-
-    set x(value: number) {
-        if (this.__elements[0] == value) {
-            return;
-        }
-        this.__elements[0] = value;
-    }
-
-    /**Y分量 */
-    get y(): number {
-        return this.__elements[1];
-    }
-
-    set y(value: number) {
-        if (this.__elements[1] == value) {
-            return;
-        }
-        this.__elements[1] = value;
-    }
-
-    /**Z分量 */
-    get z(): number {
-        return this.__elements[2];
-    }
-
-    set z(value: number) {
-        if (this.__elements[2] == value) {
-            return;
-        }
-        this.__elements[2] = value;
-    }
-
     /**
      * 获取x,y,z中最小的那个值
      */
@@ -81,11 +46,6 @@ export class Vector3 {
      */
     get maxComponent(): number {
         return Math.max(this.x, Math.max(this.y, this.z));
-    }
-
-    /**元素集合 */
-    get elements(): Float32Array | Float64Array | Array<number> {
-        return this.__elements;
     }
 
     /**
@@ -163,6 +123,15 @@ export class Vector3 {
         out.y = this.y;
         out.z = this.z;
         return out;
+    }
+
+    /**
+     * 判断是否相等
+     * @param value 
+     * @returns 
+     */
+    equals(value: Vector3): boolean {
+        return MathUtils.equals(this.x, value.x) && MathUtils.equals(this.y, value.y) && MathUtils.equals(this.z, value.z);
     }
 
     toString(): string {
@@ -276,6 +245,22 @@ export class Vector3 {
         out.y = value.y * k;
         out.z = value.z * k;
         return out;
+    }
+
+    /**
+     * a+b*k
+     * @param a 
+     * @param b 
+     * @param k 
+     * @param result 
+     * @returns 
+     */
+    static addScaled(a: Vector3, b: Vector3, k: number, result?: Vector3): Vector3 {
+        result = result || new Vector3();
+        result.x = a.x + b.x * k;
+        result.y = a.y + b.y * k;
+        result.z = a.z + b.z * k;
+        return result;
     }
 
     /**
@@ -394,11 +379,50 @@ export class Vector3 {
      * @param end 
      * @param result 
      */
-    static lerp(t:number,start:Vector3,end:Vector3,result?:Vector3):Vector3{
-        result=result||new Vector3();
-        let s1:Vector3=this.scale(1-t,start,this.tmp_Vec3_0);
-        let e1:Vector3=this.scale(t,end,this.tmp_Vec3_1);
-        this.add(s1,e1,result);
+    static lerp(t: number, start: Vector3, end: Vector3, result?: Vector3): Vector3 {
+        result = result || new Vector3();
+        let s1: Vector3 = this.scale(1 - t, start, this.tmp0);
+        let e1: Vector3 = this.scale(t, end, this.tmp1);
+        this.add(s1, e1, result);
         return result;
+    }
+
+
+    /**
+     * 通过v1构造一个局部坐标系
+     * @param v1   必须是归一化后的向量
+     * @param v2 
+     * @param v3 
+     */
+    static coordinateSystem(v1: Vector3, v2: Vector3, v3: Vector3): void {
+        if (Math.abs(v1.x) > Math.abs(v1.y)) {
+            v2.x = -v1.z;
+            v2.y = 0;
+            v2.z = v1.z;
+            v2.scale(1 / Math.sqrt(v1.x * v1.x + v1.z * v1.z));
+        } else {
+            v2.x = 0;
+            v2.y = v1.z;
+            v2.z = -v1.y;
+            v2.scale(1 / Math.sqrt(v1.y * v1.y + v1.z * v1.z));
+        }
+        Vector3.cross(v1, v2, v3);
+    }
+
+
+    /**
+     * 将法线规范在和指定向量位于同一半球
+     * @param n 
+     * @param v 
+     */
+    static faceforward(n: Vector3, v: Vector3, out?: Vector3): Vector3 {
+        out = out || new Vector3();
+        let d = this.dot(n, v);
+        if (d < 0) {
+            this.negate(n, out);
+        } else {
+            n.copyTo(out);
+        }
+        return out;
     }
 }
